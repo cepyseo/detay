@@ -229,6 +229,125 @@
                 margin-top: 50%;
             }
         }
+
+        /* Koyu mod için değişkenler */
+        :root {
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --section-bg: #ffffff;
+            --header-gradient: linear-gradient(135deg, #3f51b5, #2196f3);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --section-bg: #2d2d2d;
+            --header-gradient: linear-gradient(135deg, #1a237e, #0d47a1);
+        }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        section {
+            background: var(--section-bg);
+        }
+
+        header {
+            background: var(--header-gradient);
+        }
+
+        /* Arama kutusu stili */
+        .search-container {
+            position: relative;
+            margin: 20px;
+        }
+
+        #searchInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        /* Scroll to top butonu */
+        #scrollTopBtn {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99;
+            border: none;
+            outline: none;
+            background-color: #2196f3;
+            color: white;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 50%;
+            font-size: 18px;
+            transition: 0.3s;
+        }
+
+        #scrollTopBtn:hover {
+            background-color: #1976d2;
+        }
+
+        /* Tema değiştirme butonu */
+        #themeToggle {
+            position: absolute;
+            right: 100px;
+            top: 20px;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Kod kopyalama butonu */
+        .code-container {
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            padding: 5px 10px;
+            background: #444;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .copy-btn:hover {
+            background: #666;
+        }
+
+        /* Yeni eklenen stiller */
+        .collapsible-toggle {
+            float: right;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #333;
+            transition: transform 0.2s;
+        }
+
+        .collapsible-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* Bölüm içeriği daraltıldığında gizlemek için */
+        .collapsed {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -236,7 +355,17 @@
     <!-- Üst Kısım (Header) -->
     <header>
         <h1>CLONIC GLOBAL - Rehber Sitesi</h1>
+        <button id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <button id="navToggleButton" onclick="toggleNav()">Menüyü Gizle</button>
     </header>
+
+    <!-- Arama kutusu -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Rehberde ara...">
+    </div>
+
+    <!-- Scroll to top butonu -->
+    <button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
 
     <!-- Modal Yapısı -->
     <div id="modal">
@@ -257,7 +386,7 @@
     <!-- Modal Sonu -->
 
     <!-- Yan Menü Başlangıcı -->
-    <nav>
+    <nav id="sideNav">
         <h2>İçindekiler</h2>
         <ul>
             <li><a href="#giris">Giriş</a></li>
@@ -284,7 +413,15 @@
     <!-- İçerik Başlangıcı -->
     <main>
         <section id="giris">
-            <h2>CLONIC GLOBAL SUNAR:</h2>
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h2>CLONIC GLOBAL SUNAR:</h2>
+                <button 
+                    class="collapsible-toggle"
+                    onclick="toggleSection('giris')"
+                >
+                    ▲
+                </button>
+            </div>
             <h3>CURSOR AI - VIP CRACK Rehberi</h3>
             <p>
                 Bu rehber, Cursor AI ile VIP kurulumunu nasıl gerçekleştireceğinizi, hangi adımları ve komutları izlemeniz gerektiğini anlatır. 
@@ -433,6 +570,155 @@
         // Modal kapatma fonksiyonu
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
+        }
+
+        // Yan menüyü göster/gizle fonksiyonu
+        function toggleNav() {
+            const sideNav = document.getElementById('sideNav');
+            const toggleButton = document.getElementById('navToggleButton');
+            if (sideNav.style.display === 'none') {
+                sideNav.style.display = 'block';
+                toggleButton.textContent = 'Menüyü Gizle';
+            } else {
+                sideNav.style.display = 'none';
+                toggleButton.textContent = 'Menüyü Göster';
+            }
+        }
+
+        // Koyu mod toggle
+        function toggleTheme() {
+            const body = document.body;
+            const theme = body.getAttribute('data-theme');
+            const themeBtn = document.getElementById('themeToggle');
+            
+            if (theme === 'dark') {
+                body.removeAttribute('data-theme');
+                themeBtn.textContent = '🌙🌙';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeBtn.textContent = '☀️';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Sayfa yüklendiğinde tema kontrolü
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            document.body.setAttribute('data-theme', 'dark');
+            document.getElementById('themeToggle').textContent = '☀️';
+        }
+
+        // Arama fonksiyonu
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchText = e.target.value.trim().toLowerCase();
+            const sections = document.querySelectorAll('section');
+
+            // Tüm bölümleri tekrar görünür yapıyoruz (diyorsanız)
+            sections.forEach(sec => sec.style.display = '');
+
+            // Arama metni boşken önce her şeyi eski haline döndürüyoruz
+            sections.forEach(section => {
+                highlightSearch(section, ''); // var olan <mark> etiketlerini temizler
+            });
+
+            if (searchText) {
+                sections.forEach(section => {
+                    const text = section.textContent.toLowerCase();
+                    if (text.includes(searchText)) {
+                        highlightSearch(section, searchText);
+                    } else {
+                        // Eşleşme yoksa section'ı gizleyebiliriz
+                        section.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // Scroll to top fonksiyonu
+        window.onscroll = function() {
+            const btn = document.getElementById('scrollTopBtn');
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                btn.style.display = 'block';
+            } else {
+                btn.style.display = 'none';
+            }
+        };
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Kod bloklarına kopyalama butonu ekleme
+        document.querySelectorAll('code').forEach(block => {
+            const container = document.createElement('div');
+            container.className = 'code-container';
+            block.parentNode.insertBefore(container, block);
+            container.appendChild(block);
+            
+            const button = document.createElement('button');
+            button.className = 'copy-btn';
+            button.textContent = 'Kopyala';
+            button.onclick = function() {
+                navigator.clipboard.writeText(block.textContent);
+                button.textContent = 'Kopyalandı!';
+                setTimeout(() => button.textContent = 'Kopyala', 2000);
+            };
+            container.appendChild(button);
+        });
+
+        // 1) Bölümleri daraltma / genişletme fonksiyonu
+        function toggleSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+
+            // section içindeki asıl içerik (ilk küçük kapsayıcıdan sonrasını daraltalım)
+            const contentNodes = Array.from(section.children).slice(1); 
+            contentNodes.forEach(node => {
+                node.classList.toggle('collapsed');
+            });
+
+            // ▲ ve ▼ ikonlarını değiştirelim
+            const toggleBtn = section.querySelector('.collapsible-toggle');
+            if (toggleBtn) {
+                toggleBtn.textContent = toggleBtn.textContent === '▲' ? '▼' : '▲';
+            }
+        }
+
+        // 2) Arama içinde sonuçları vurgulama
+        function highlightSearch(rootElement, query) {
+            // Mevcut vurguları önce temizleyerek başlayalım
+            const marks = rootElement.querySelectorAll('mark');
+            marks.forEach(mark => {
+                // <mark> etiketini orijinal textNode'a geri çeviriyoruz
+                const textNode = document.createTextNode(mark.textContent);
+                mark.parentNode.replaceChild(textNode, mark);
+            });
+
+            if (!query) return; // Arama kutusu boşsa vurgulama yapma
+
+            // Tüm metin düğümleri içinde aranan kelimeyi <mark> ile saralım
+            const regex = new RegExp(`(${query})`, 'gi');
+            const walker = document.createTreeWalker(rootElement, NodeFilter.SHOW_TEXT, null);
+            const textNodes = [];
+            while (walker.nextNode()) {
+                textNodes.push(walker.currentNode);
+            }
+
+            textNodes.forEach(node => {
+                if (
+                    node.textContent.toLowerCase().includes(query) &&
+                    node.parentNode.nodeName !== 'CODE' // Kod bloklarını hariç tutabiliriz
+                ) {
+                    const tempEl = document.createElement('div');
+                    tempEl.innerHTML = node.textContent.replace(regex, '<mark>$1</mark>');
+
+                    while (tempEl.firstChild) {
+                        node.parentNode.insertBefore(tempEl.firstChild, node);
+                    }
+                    node.parentNode.removeChild(node);
+                }
+            });
         }
     </script>
 </body>
